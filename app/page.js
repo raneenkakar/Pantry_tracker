@@ -151,7 +151,7 @@ export default function Home() {
             Hello!
           </Typography>
           <Typography variant="h5" color="text.secondary">
-            Let's get started with our inventory items
+            Let&apos;s get started with our inventory items
           </Typography>
           <Button
             variant="contained"
