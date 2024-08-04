@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { firestore } from '../firebase';
 import { Box, Typography, Modal, Stack, TextField, Button, AppBar, Toolbar, Container, IconButton } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -13,10 +13,18 @@ import SearchIcon from '@mui/icons-material/Search';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#81c784', // Light green
     },
     secondary: {
-      main: '#dc004e',
+      main: '#ff8a65', // Light orange
+    },
+    background: {
+      default: '#f0f4c3', // Light yellowish green
+      paper: '#ffffff',
+    },
+    text: {
+      primary: '#000000',
+      secondary: '#757575',
     },
   },
   typography: {
@@ -51,6 +59,7 @@ const modalStyle = {
 };
 
 export default function Home() {
+  const [page, setPage] = useState('welcome');
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
@@ -111,10 +120,6 @@ export default function Home() {
     await updateInventory();
   };
 
-  useEffect(() => {
-    updateInventory();
-  }, []);
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleInputChange = (e) => setItemName(e.target.value);
@@ -131,157 +136,188 @@ export default function Home() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box display="flex" flexDirection="column" minHeight="100vh">
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6">Inventory Management</Typography>
-          </Toolbar>
-        </AppBar>
-        <Container maxWidth="md" sx={{ flexGrow: 1, mb: 4 }}>
-          <Box
-            width="100%"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            gap={2}
-            mt={4}
+      {page === 'welcome' ? (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          height="100vh"
+          bgcolor="background.default"
+          textAlign="center"
+          style={{ backgroundImage: 'url(https://wallpapercave.com/wp/wp4763059.jpg)' }}
+        >
+          <Typography variant="h1" color="primary">
+            Hello!
+          </Typography>
+          <Typography variant="h5" color="text.secondary">
+            Let's get started with our inventory items
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setPage('inventory')}
+            sx={{ mt: 4 }}
           >
-            <TextField
-              id="search-bar"
-              label="Search"
-              variant="outlined"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              InputProps={{
-                endAdornment: (
-                  <IconButton>
-                    <SearchIcon />
-                  </IconButton>
-                ),
-              }}
-              fullWidth
-              sx={{ mb: 4 }}
-            />
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleOpen}
+            Get Started
+          </Button>
+        </Box>
+      ) : (
+        <Box display="flex" flexDirection="column" minHeight="100vh" style={{ backgroundImage: 'url(https://i.pinimg.com/originals/e9/2a/18/e92a18e197cb4d3b62dd65ee81329ed3.png)', backgroundSize: 'cover' }}> 
+          <AppBar position="static" sx={{ bgcolor: 'primary.main' }}>
+            <Toolbar>
+              <Typography variant="h6" color="text.primary">Inventory Management</Typography>
+            </Toolbar>
+          </AppBar>
+          <Container maxWidth="md" sx={{ flexGrow: 1, mb: 4 }}>
+            <Box
+              width="100%"
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              gap={2}
+              mt={4}
             >
-              Add New Item
-            </Button>
-            <Modal
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box sx={modalStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Add Item
-                </Typography>
-                <Stack width="100%" direction="row" spacing={2}>
-                  <TextField
-                    id="outlined-basic"
-                    label="Item"
-                    variant="outlined"
-                    fullWidth
-                    value={itemName}
-                    onChange={handleInputChange}
-                  />
-                  <Button
-                    variant="outlined"
-                    onClick={handleAddItem}
-                  >
-                    Add
-                  </Button>
+              <TextField
+                id="search-bar"
+                label="Search"
+                variant="outlined"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton>
+                      <SearchIcon />
+                    </IconButton>
+                  ),
+                }}
+                fullWidth
+                sx={{ mb: 4 }}
+              />
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleOpen}
+                sx={{ bgcolor: 'primary.main', color: 'text.primary' }}
+              >
+                Add New Item
+              </Button>
+              <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box sx={modalStyle}>
+                  <Typography id="modal-modal-title" variant="h6" component="h2">
+                    Add Item
+                  </Typography>
+                  <Stack width="100%" direction="row" spacing={2}>
+                    <TextField
+                      id="outlined-basic"
+                      label="Item"
+                      variant="outlined"
+                      fullWidth
+                      value={itemName}
+                      onChange={handleInputChange}
+                    />
+                    <Button
+                      variant="outlined"
+                      onClick={handleAddItem}
+                      sx={{ bgcolor: 'primary.main', color: 'text.primary' }}
+                    >
+                      Add
+                    </Button>
+                  </Stack>
+                </Box>
+              </Modal>
+              <Box width="100%" border="1px solid #333" borderRadius={4} boxShadow={2} bgcolor="background.paper">
+                <Box
+                  width="100%"
+                  height="100px"
+                  bgcolor="primary.main"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{ borderTopLeftRadius: 4, borderTopRightRadius: 4 }}
+                >
+                  <Typography variant="h2" color="text.primary" textAlign="center">
+                    Inventory Items
+                  </Typography>
+                </Box>
+                <Stack
+                  width="100%"
+                  maxHeight="400px"
+                  spacing={2}
+                  overflow="auto"
+                  padding={2}
+                  sx={{ '&::-webkit-scrollbar': { width: '6px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: '#888', borderRadius: '4px' } }}
+                >
+                  {filteredInventory.map(({ name, quantity }) => (
+                    <Box
+                      key={name}
+                      width="100%"
+                      minHeight="150px"
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      bgcolor="#e0f7fa"
+                      padding={3}
+                      borderRadius={2}
+                      boxShadow={1}
+                      sx={{
+                        transition: 'transform 0.2s ease-in-out',
+                        '&:hover': {
+                          transform: 'scale(1.02)',
+                        },
+                      }}
+                    >
+                      <Typography variant="h5" color="text.primary" textAlign="center">
+                        {name.charAt(0).toUpperCase() + name.slice(1)}
+                      </Typography>
+                      <Typography variant="h5" color="text.primary" textAlign="center">
+                        Quantity: {quantity}
+                      </Typography>
+                      <Stack direction="row" spacing={1}>
+                        <IconButton onClick={() => removeItem(name)} sx={{ color: 'secondary.main' }}>
+                          <DeleteIcon />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => {
+                            const newName = prompt('Enter new item name', name);
+                            if (newName) {
+                              editItem(name, newName);
+                            }
+                          }}
+                          sx={{ color: 'primary.main' }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Stack>
+                    </Box>
+                  ))}
                 </Stack>
               </Box>
-            </Modal>
-            <Box width="100%" border="1px solid #333" borderRadius={4} boxShadow={2}>
-              <Box
-                width="100%"
-                height="100px"
-                bgcolor="#ADD8E6"
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                sx={{ borderTopLeftRadius: 4, borderTopRightRadius: 4 }}
-              >
-                <Typography variant="h2" color="#333" textAlign="center">
-                  Inventory Items
-                </Typography>
-              </Box>
-              <Stack
-                width="100%"
-                maxHeight="400px"
-                spacing={2}
-                overflow="auto"
-                padding={2}
-                sx={{ '&::-webkit-scrollbar': { width: '6px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: '#888', borderRadius: '4px' } }}
-              >
-                {filteredInventory.map(({ name, quantity }) => (
-                  <Box
-                    key={name}
-                    width="100%"
-                    minHeight="150px"
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    bgcolor="#f0f0f0"
-                    padding={3}
-                    borderRadius={2}
-                    boxShadow={1}
-                    sx={{
-                      transition: 'transform 0.2s ease-in-out',
-                      '&:hover': {
-                        transform: 'scale(1.02)',
-                      },
-                    }}
-                  >
-                    <Typography variant="h5" color="#333" textAlign="center">
-                      {name.charAt(0).toUpperCase() + name.slice(1)}
-                    </Typography>
-                    <Typography variant="h5" color="#333" textAlign="center">
-                      Quantity: {quantity}
-                    </Typography>
-                    <Stack direction="row" spacing={1}>
-                      <IconButton onClick={() => removeItem(name)} color="error">
-                        <DeleteIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => {
-                          const newName = prompt('Enter new item name', name);
-                          if (newName) {
-                            editItem(name, newName);
-                          }
-                        }}
-                        color="primary"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Stack>
-                  </Box>
-                ))}
-              </Stack>
             </Box>
+          </Container>
+          <Box
+            component="footer"
+            width="100%"
+            py={2}
+            bgcolor="primary.main"
+            color="text.primary"
+            display="flex"
+            justifyContent="center"
+            mt={4}
+          >
+            <Typography>&copy; {new Date().getFullYear()} Raneen Kakar</Typography>
           </Box>
-        </Container>
-        <Box
-          component="footer"
-          width="100%"
-          py={2}
-          bgcolor="#3f51b5"
-          color="white"
-          display="flex"
-          justifyContent="center"
-          mt={4}
-        >
-          <Typography>&copy; {new Date().getFullYear()} Raneen Kakar</Typography>
         </Box>
-      </Box>
+      )}
     </ThemeProvider>
   );
 }
+
 
 
 
